@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 var request = require('request');
 var User = mongoose.model('User');
+var config = require('./config');
 
 exports.getWeather = function (req, res) {
     User.findOne({_id: req.decoded}, function (err, user) {
@@ -11,7 +12,7 @@ exports.getWeather = function (req, res) {
             });
         }else{
             if(user){
-                request('http://api.openweathermap.org/data/2.5/weather?q=Istanbul,tr&APPID=12c721e0096519e62f2ece6aa4341f47',
+                request('http://api.openweathermap.org/data/2.5/weather?q=' + req.params.city +',tr&APPID=' + config.appid,
                         function (error, response, body) {
                     if (error || response.statusCode != 200) {
                         console.log(error);

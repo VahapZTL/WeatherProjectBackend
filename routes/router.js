@@ -14,7 +14,7 @@ module.exports = function() {
 
     var router = express.Router();
 
-    router.route('/weather')
+    router.route('/weather/:city')
         .get(controllers.auth.isAuth, controllers.user.getWeather);
 
     router.route('/me')
