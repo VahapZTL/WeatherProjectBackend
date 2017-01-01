@@ -22,18 +22,12 @@ exports.getWeather = function (req, res) {
                     }else {
                         var gelenler = JSON.parse(body);
 
-                        console.log(gelenler);
-                        console.log('DB ye Aktarma Başlangıç');
-
                         user.havaDurumu.coordLon = gelenler['coord'].lon;
                         user.havaDurumu.coordLat = gelenler['coord'].lat;
-                        user.havaDurumu.weatherMain = gelenler['weather'].main;
+                        user.havaDurumu.weatherMain = gelenler['weather'][0].main;
                         user.havaDurumu.mainTemp = gelenler['main'].temp;
                         user.havaDurumu.nameCity = gelenler['name'];
                         user.updateDate = Date.now();
-
-                        console.log('DB ye Aktarma Bitiş');
-                        console.log(gelenler['main'].temp);
 
                         user.save(function (err, user) {
                             if(err){
@@ -44,7 +38,14 @@ exports.getWeather = function (req, res) {
                             }else{
                                 res.json({
                                     success: true,
-                                    data: user
+                                    data: {
+                                        Lon: user.havaDurumu.coordLon,
+                                        Lat: user.havaDurumu.coordLat,
+                                        Weather: user.havaDurumu.weatherMain,
+                                        Temp: user.havaDurumu.mainTemp,
+                                        City: user.havaDurumu.nameCity,
+                                        Update: user.updateDate
+                                    }
                                 });
                             }
                         });
