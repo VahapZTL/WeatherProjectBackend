@@ -7,13 +7,11 @@ var UserSchema = new Schema({
     name: String,
     email: String,
     password: String,
-    havaDurumu: {
-        coordLon: Number,
-        coordLat: Number,
+    havaDurumu: [{
         weatherMain: String,
-        mainTemp: Number,
-        nameCity: String
-    },
+        mainTemp: Number
+    }],
+    city: String,
     token: String,
     updateDate: Date
 

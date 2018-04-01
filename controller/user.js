@@ -12,7 +12,7 @@ exports.getWeather = function (req, res) {
             });
         }else{
             if(user){
-                request('http://api.openweathermap.org/data/2.5/weather?q=' + req.params.city +',tr&APPID=' + config.appid,
+                request('http://api.openweathermap.org/data/2.5/forecast/daily?q=' + req.params.city + '&units=metric&cnt=7&lang=tr&appid=' + config.appid,
                         function (error, response, body) {
                     if (error || response.statusCode != 200) {
                         console.log(error);
@@ -23,11 +23,13 @@ exports.getWeather = function (req, res) {
                     }else {
                         var gelenler = JSON.parse(body);
 
-                        user.havaDurumu.coordLon = gelenler['coord'].lon;
-                        user.havaDurumu.coordLat = gelenler['coord'].lat;
-                        user.havaDurumu.weatherMain = gelenler['weather'][0].main;
-                        user.havaDurumu.mainTemp = gelenler['main'].temp;
-                        user.havaDurumu.nameCity = gelenler['name'];
+                        gelenler['list'].forEach(function (value, index){
+                            user.havaDurumu[index] = {
+                                weatherMain: value['weather'][0].description,
+                                mainTemp: value['temp'].max
+                            };
+                        });
+                        user.city = gelenler['city'].name;
                         user.updateDate = Date.now();
 
                         user.save(function (err, user) {
@@ -40,11 +42,8 @@ exports.getWeather = function (req, res) {
                                 res.json({
                                     success: true,
                                     data: {
-                                        Lon: user.havaDurumu.coordLon,
-                                        Lat: user.havaDurumu.coordLat,
-                                        Weather: user.havaDurumu.weatherMain,
-                                        Temp: user.havaDurumu.mainTemp,
-                                        City: user.havaDurumu.nameCity,
+                                        Weather: user.havaDurumu,
+                                        City: user.city,
                                         Update: user.updateDate
                                     }
                                 });
